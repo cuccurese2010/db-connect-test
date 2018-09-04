@@ -97,7 +97,7 @@ input {
     if ($database) {
     $dbcheck = mysqli_select_db("$database");
         if (!$dbcheck) {
-            echo mysql_error();
+            echo mysqli_error();
         }else{
             echo "<p>Successfully connected to the database '" . $database . "'</p>";
             // Check tables

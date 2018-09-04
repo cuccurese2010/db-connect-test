@@ -95,7 +95,7 @@ input {
         echo "</pre>";
     }
     if ($database) {
-    $dbcheck = mysql_select_db("$database");
+    $dbcheck = mysqli_select_db("$database");
         if (!$dbcheck) {
             echo mysqli_error();
         }else{

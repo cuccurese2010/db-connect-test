@@ -102,7 +102,7 @@ input {
             echo "<p>Successfully connected to the database '" . $database . "'</p>";
             // Check tables
             $sql = "SHOW TABLES FROM `$database`";
-            $result = mysqli_query($sql);
+            $result = mysqli_query($link,$sql);
             if (mysqli_num_rows($result) > 0) {
                 echo "<p>Available tables:</p>";
                 echo "<pre>n";

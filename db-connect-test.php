@@ -74,7 +74,7 @@ input {
     $password = trim($_POST['password']);
     $database = trim($_POST['database']);
  
-    $link = mysql_connect("$hostname", "$username", "$password");
+    $link = mysqli_connect("$hostname", "$username", "$password");
         if (!$link) {
             echo "<p>Could not connect to the server '" . $hostname . "'</p>";
             echo mysql_error();

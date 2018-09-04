@@ -1,21 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>MySQL Connection Test</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<style type="text/css">
+#wrapper {
+    width: 600px;
+    margin: 20px auto 0;
+    font: 1.2em Verdana, Arial, sans-serif;
+}
+input {
+    font-size: 1em;
+}
+#submit {
+    padding: 4px 8px;
+}
+</style>
+</head>
+ 
+<body>
+ 
+<div id="wrapper">
+ 
 <?php
-# Fill our vars and run on cli
-# $ php -f db-connect-test.php
-$dbname = 'lllc';
-$dbuser = 'root';
-$dbpass = 'root';
-$dbhost = 'mysql';
-$connect = mysql_connect($dbhost, $dbuser, $dbpass) or die("Unable to Connect to '$dbhost'");
-mysql_select_db($dbname) or die("Could not open the db '$dbname'");
-$test_query = "SHOW TABLES FROM $dbname";
-$result = mysql_query($test_query);
-$tblCnt = 0;
-while($tbl = mysql_fetch_array($result)) {
-  $tblCnt++;
-  #echo $tbl[0]."<br />\n";
+    $action = htmlspecialchars($_GET['action'], ENT_QUOTES);
+?>
+ 
+<?php if (!$action) { ?>
+ 
+    <h1>MySQL connection test</h1>
+ 
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>?action=test" id="mail" method="post">
+ 
+    <table cellpadding="2">
+        <tr>
+            <td>Hostname</td>
+            <td><input type="text" name="hostname" id="hostname" value="" size="30" tabindex="1" /></td>
+            <td>(usually "localhost")</td>
+        </tr>
+        <tr>
+            <td>Username</td>
+            <td><input type="text" name="username" id="username" value="" size="30" tabindex="2" /></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input type="text" name="password" id="password" value="" size="30" tabindex="3" /></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>Database</td>
+            <td><input type="text" name="database" id="database" value="" size="30" tabindex="4" /></td>
+            <td>(optional)</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" id="submit" value="Test Connection" tabindex="5" /></td>
+            <td></td>
+        </tr>
+    </table>
+ 
+</form>
+ 
+<?php } ?>
+ 
+<?php if ($action == "test") {
+ 
+// The variables have not been adequately sanitized to protect against SQL Injection attacks: http://us3.php.net/mysql_real_escape_string
+ 
+    $hostname = trim($_POST['hostname']);
+    $username = trim($_POST['username']);
+    $password = trim($_POST['password']);
+    $database = trim($_POST['database']);
+ 
+    $link = mysql_connect("$hostname", "$username", "$password");
+        if (!$link) {
+            echo "<p>Could not connect to the server '" . $hostname . "'</p>";
+            echo mysql_error();
+        }else{
+            echo "<p>Successfully connected to the server '" . $hostname . "'</p>";
+//          printf("MySQL client info: %sn", mysql_get_client_info());
+//          printf("MySQL host info: %sn", mysql_get_host_info());
+//          printf("MySQL server version: %sn", mysql_get_server_info());
+//          printf("MySQL protocol version: %sn", mysql_get_proto_info());
+        }
+    if ($link && !$database) {
+        echo "<p>No database name was given. Available databases:</p>";
+        $db_list = mysql_list_dbs($link);
+        echo "<pre>";
+        while ($row = mysql_fetch_array($db_list)) {
+            echo $row['Database'];
+        }
+        echo "</pre>";
+    }
+    if ($database) {
+    $dbcheck = mysql_select_db("$database");
+        if (!$dbcheck) {
+            echo mysql_error();
+        }else{
+            echo "<p>Successfully connected to the database '" . $database . "'</p>";
+            // Check tables
+            $sql = "SHOW TABLES FROM `$database`";
+            $result = mysql_query($sql);
+            if (mysql_num_rows($result) > 0) {
+                echo "<p>Available tables:</p>";
+                echo "<pre>n";
+                while ($row = mysql_fetch_row($result)) {
+                    echo "{$row[0]}";
+                }
+                echo "</pre>n";
+            } else {
+                echo "<p>The database '" . $database . "' contains no tables.</p>";
+                echo mysql_error();
+            }
+        }
+    }
 }
-if (!$tblCnt) {
-  echo "There are no tables<br />\n";
-} else {
-  echo "There are $tblCnt tables<br />\n";
-}
+?>
+ 
+</div><!-- end #wrapper -->
+</body>
+</html>

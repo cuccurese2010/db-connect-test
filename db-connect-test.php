@@ -77,19 +77,19 @@ input {
     $link = mysqli_connect("$hostname", "$username", "$password");
         if (!$link) {
             echo "<p>Could not connect to the server '" . $hostname . "'</p>";
-            echo mysql_error();
+            echo mysqli_error();
         }else{
             echo "<p>Successfully connected to the server '" . $hostname . "'</p>";
-//          printf("MySQL client info: %sn", mysql_get_client_info());
-//          printf("MySQL host info: %sn", mysql_get_host_info());
-//          printf("MySQL server version: %sn", mysql_get_server_info());
-//          printf("MySQL protocol version: %sn", mysql_get_proto_info());
+//          printf("MySQL client info: %sn", mysqli_get_client_info());
+//          printf("MySQL host info: %sn", mysqli_get_host_info());
+//          printf("MySQL server version: %sn", mysqli_get_server_info());
+//          printf("MySQL protocol version: %sn", mysqli_get_proto_info());
         }
     if ($link && !$database) {
         echo "<p>No database name was given. Available databases:</p>";
-        $db_list = mysql_list_dbs($link);
+        $db_list = mysqli_list_dbs($link);
         echo "<pre>";
-        while ($row = mysql_fetch_array($db_list)) {
+        while ($row = mysqli_fetch_array($db_list)) {
             echo $row['Database'];
         }
         echo "</pre>";
@@ -102,17 +102,17 @@ input {
             echo "<p>Successfully connected to the database '" . $database . "'</p>";
             // Check tables
             $sql = "SHOW TABLES FROM `$database`";
-            $result = mysql_query($sql);
-            if (mysql_num_rows($result) > 0) {
+            $result = mysqli_query($sql);
+            if (mysqli_num_rows($result) > 0) {
                 echo "<p>Available tables:</p>";
                 echo "<pre>n";
-                while ($row = mysql_fetch_row($result)) {
+                while ($row = mysqli_fetch_row($result)) {
                     echo "{$row[0]}";
                 }
                 echo "</pre>n";
             } else {
                 echo "<p>The database '" . $database . "' contains no tables.</p>";
-                echo mysql_error();
+                echo mysqli_error();
             }
         }
     }
